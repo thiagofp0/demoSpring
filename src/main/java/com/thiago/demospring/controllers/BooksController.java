@@ -1,34 +1,40 @@
 package com.thiago.demospring.controllers;
 
-import org.springframework.stereotype.Controller;
+import com.thiago.demospring.domain.entities.Book;
+import com.thiago.demospring.infrastructure.BooksRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/books")
 public class BooksController {
 
     @GetMapping("/get")
-    public String getBooks() {
-        return("Get books");
+    public ResponseEntity<Iterable<Book>> getBooks() {
+        Iterable<Book> books = BooksRepository.getInstance().getBooks();
+        return ResponseEntity.ok(books);
     }
 
-    @GetMapping("/set")
-    public String setBooks() {
-        return("Set books");
-    }
-
-    @PostMapping("/post")
-    public String postBooks(@RequestBody String book) {
-        return(book);
+    @PostMapping("/set")
+    public ResponseEntity<Void> setBooks(@RequestBody List<Book> books) {
+        BooksRepository.getInstance().setBooks(books);
+        return ResponseEntity.ok().build();
+        // return new ResponseEntity<Void>(HttpStatus.CREATED);
     }
 
     @PutMapping("/put")
-    public String putBooks(@RequestBody String book) {
-        return(book);
+    public ResponseEntity<Void>  putBooks(@RequestBody Book book) {
+        BooksRepository.getInstance().editBook(book);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public String deleteBooks(@PathVariable String id) {
-        return("Delete book with id: " + id);
+    @DeleteMapping("/delete/{isbn}")
+    public ResponseEntity<Void> deleteBooks(@PathVariable String isbn) {
+        System.out.println(isbn);
+        BooksRepository.getInstance().deleteBook(isbn);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
